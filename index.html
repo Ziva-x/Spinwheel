@@ -7,20 +7,32 @@
 
 <style>
 body {
-    text-align: center;
-    font-family: Arial;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     background: #111;
     color: #fff;
+    text-align: center;
 }
 
-h1 {
-    margin-top: 20px;
+/* 🔷 Header */
+.header {
+    width: 100%;
+    height: 130px;
+    background: #C9D6DC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.logo {
+    max-height: 80px;
+}
+
+/* 🎯 Wheel */
 #wheel-container {
     position: relative;
     width: 320px;
-    margin: 40px auto;
+    margin: 30px auto;
 }
 
 #wheel {
@@ -42,38 +54,86 @@ h1 {
     transform-origin: 0% 0%;
 }
 
+.slice span {
+    position: absolute;
+    top: 60%;
+    left: 10px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: bold;
+    transform-origin: 0 0;
+}
+
+/* 🔻 Pointer */
 #pointer {
     position: absolute;
     top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 30px;
+    font-size: 28px;
 }
 
+/* 🔘 Button */
 button {
     padding: 12px 25px;
     font-size: 18px;
-    cursor: pointer;
     border: none;
+    border-radius: 10px;
     background: orange;
     color: #000;
-    border-radius: 6px;
+    cursor: pointer;
 }
 
 button:disabled {
     background: gray;
 }
 
-#result {
-    margin-top: 20px;
-    font-size: 20px;
+/* 🌫 Blur */
+.blur {
+    filter: blur(8px);
+}
+
+/* 📦 Popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(15px);
+    background: rgba(0,0,0,0.3);
+}
+
+.popup-box {
+    background: rgba(255,255,255,0.9);
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    width: 80%;
+    max-width: 300px;
+    color: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.popup-box button {
+    margin-top: 15px;
+    background: #007AFF;
+    color: #fff;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎯 Spin & Win</h1>
+<!-- 🔷 Header -->
+<div class="header">
+    <img src="https://via.placeholder.com/200x80?text=MonkeyGarage" class="logo">
+</div>
+
+<h2>🎯 Spin & Win</h2>
 
 <div id="wheel-container">
     <div id="pointer">▼</div>
@@ -82,29 +142,44 @@ button:disabled {
 
 <button onclick="spin()" id="spinBtn">SPIN</button>
 
-<div id="result"></div>
+<!-- 🎉 Popup -->
+<div id="popup" class="popup">
+  <div class="popup-box">
+    <h2 id="popup-title"></h2>
+    <p id="popup-code"></p>
+    <button onclick="goToSite()">Go Now</button>
+  </div>
+</div>
 
 <script>
-// 🎁 Rewards (edit here)
+// 🎁 Rewards (EDIT HERE)
 const rewards = [
     { label: "5% OFF", code: "MG5", weight: 40 },
     { label: "10% OFF", code: "MG10", weight: 30 },
     { label: "20% OFF", code: "MG20", weight: 15 },
     { label: "50% OFF", code: "MG50", weight: 2 },
-    { label: "Better Luck Next Time", code: "", weight: 50 }
+    { label: "TRY AGAIN", code: "", weight: 50 }
 ];
 
 const wheel = document.getElementById("wheel");
-const resultDiv = document.getElementById("result");
 const spinBtn = document.getElementById("spinBtn");
 
-// 🎨 Create slices
 const total = rewards.length;
+const angle = 360 / total;
+
+// 🎨 Create slices
 rewards.forEach((reward, i) => {
     let slice = document.createElement("div");
     slice.className = "slice";
-    slice.style.transform = `rotate(${i * (360/total)}deg) skewY(${90 - (360/total)}deg)`;
+
+    slice.style.transform = `rotate(${i * angle}deg) skewY(${90 - angle}deg)`;
     slice.style.background = `hsl(${i * 70}, 70%, 50%)`;
+
+    let text = document.createElement("span");
+    text.innerText = reward.label;
+    text.style.transform = `rotate(${angle/2}deg) skewY(${-(90 - angle)}deg)`;
+
+    slice.appendChild(text);
     wheel.appendChild(slice);
 });
 
@@ -119,10 +194,12 @@ function getWeightedReward() {
     }
 }
 
-// 🎡 Spin logic
+let selectedReward = null;
+let countdownInterval = null;
+
+// 🎡 Spin
 function spin() {
 
-    // 🔒 One-time spin lock
     if (localStorage.getItem("spun")) {
         alert("You already used your spin!");
         return;
@@ -132,29 +209,58 @@ function spin() {
     spinBtn.disabled = true;
 
     const selected = getWeightedReward();
+    selectedReward = selected;
+
     const index = rewards.indexOf(selected);
 
-    const anglePerSlice = 360 / rewards.length;
-    const randomOffset = Math.random() * anglePerSlice;
-
-    const rotation = 360 * 5 + (index * anglePerSlice) + randomOffset;
+    const randomOffset = Math.random() * angle;
+    const rotation = 360 * 5 + (index * angle) + randomOffset;
 
     wheel.style.transform = `rotate(-${rotation}deg)`;
 
     setTimeout(() => {
-        if (selected.code) {
-            resultDiv.innerHTML =
-                `${selected.label} 🎉 <br> Use Code: <b>${selected.code}</b><br>Redirecting...`;
-
-            // 🔗 Redirect after 3 sec
-            setTimeout(() => {
-                window.location.href = `https://monkeygarage.in/?coupon=${selected.code}`;
-            }, 3000);
-
-        } else {
-            resultDiv.innerText = "Better luck next time 😢";
-        }
+        showPopup(selected);
     }, 4000);
+}
+
+// 🎉 Popup + Countdown
+function showPopup(reward) {
+    const popup = document.getElementById("popup");
+
+    document.body.classList.add("blur");
+
+    document.getElementById("popup-title").innerText =
+        reward.code ? reward.label + " 🎉" : "Better luck next time 😢";
+
+    let countdown = 10;
+
+    document.getElementById("popup-code").innerHTML =
+        reward.code
+        ? `Use Code: <b>${reward.code}</b><br><br>Redirecting in <span id="count">${countdown}</span>s`
+        : `Redirecting in <span id="count">${countdown}</span>s`;
+
+    popup.style.display = "flex";
+
+    countdownInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("count").innerText = countdown;
+
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            goToSite();
+        }
+    }, 1000);
+}
+
+// 🔗 Redirect
+function goToSite() {
+    clearInterval(countdownInterval);
+
+    if (selectedReward && selectedReward.code) {
+        window.location.href = `https://monkeygarage.in/?coupon=${selectedReward.code}`;
+    } else {
+        window.location.href = "https://monkeygarage.in";
+    }
 }
 </script>
 
