@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spin & Win - Monkey Garage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    text-align: center;
+    font-family: Arial;
+    background: #111;
+    color: #fff;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+#wheel-container {
+    position: relative;
+    width: 320px;
+    margin: 40px auto;
+}
+
+#wheel {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 8px solid #fff;
+    position: relative;
+    overflow: hidden;
+    transition: transform 4s ease-out;
+}
+
+.slice {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+}
+
+#pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    background: orange;
+    color: #000;
+    border-radius: 6px;
+}
+
+button:disabled {
+    background: gray;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Spin & Win</h1>
+
+<div id="wheel-container">
+    <div id="pointer">▼</div>
+    <div id="wheel"></div>
+</div>
+
+<button onclick="spin()" id="spinBtn">SPIN</button>
+
+<div id="result"></div>
+
+<script>
+// 🎁 Rewards (edit here)
+const rewards = [
+    { label: "5% OFF", code: "MG5", weight: 40 },
+    { label: "10% OFF", code: "MG10", weight: 30 },
+    { label: "20% OFF", code: "MG20", weight: 15 },
+    { label: "50% OFF", code: "MG50", weight: 2 },
+    { label: "Better Luck Next Time", code: "", weight: 50 }
+];
+
+const wheel = document.getElementById("wheel");
+const resultDiv = document.getElementById("result");
+const spinBtn = document.getElementById("spinBtn");
+
+// 🎨 Create slices
+const total = rewards.length;
+rewards.forEach((reward, i) => {
+    let slice = document.createElement("div");
+    slice.className = "slice";
+    slice.style.transform = `rotate(${i * (360/total)}deg) skewY(${90 - (360/total)}deg)`;
+    slice.style.background = `hsl(${i * 70}, 70%, 50%)`;
+    wheel.appendChild(slice);
+});
+
+// 🎲 Weighted random
+function getWeightedReward() {
+    let totalWeight = rewards.reduce((sum, r) => sum + r.weight, 0);
+    let random = Math.random() * totalWeight;
+
+    for (let reward of rewards) {
+        if (random < reward.weight) return reward;
+        random -= reward.weight;
+    }
+}
+
+// 🎡 Spin logic
+function spin() {
+
+    // 🔒 One-time spin lock
+    if (localStorage.getItem("spun")) {
+        alert("You already used your spin!");
+        return;
+    }
+
+    localStorage.setItem("spun", true);
+    spinBtn.disabled = true;
+
+    const selected = getWeightedReward();
+    const index = rewards.indexOf(selected);
+
+    const anglePerSlice = 360 / rewards.length;
+    const randomOffset = Math.random() * anglePerSlice;
+
+    const rotation = 360 * 5 + (index * anglePerSlice) + randomOffset;
+
+    wheel.style.transform = `rotate(-${rotation}deg)`;
+
+    setTimeout(() => {
+        if (selected.code) {
+            resultDiv.innerHTML =
+                `${selected.label} 🎉 <br> Use Code: <b>${selected.code}</b><br>Redirecting...`;
+
+            // 🔗 Redirect after 3 sec
+            setTimeout(() => {
+                window.location.href = `https://monkeygarage.in/?coupon=${selected.code}`;
+            }, 3000);
+
+        } else {
+            resultDiv.innerText = "Better luck next time 😢";
+        }
+    }, 4000);
+}
+</script>
+
+</body>
+</html>
