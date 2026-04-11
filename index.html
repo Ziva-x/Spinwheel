@@ -5,264 +5,204 @@
 <title>Spin & Win - Monkey Garage</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Lato',sans-serif; }
+
+/* HEADER */
+header {
+  width:100%;
+  background:skyblue;
+  padding:15px;
+}
+header img { height:40px; }
+
+/* BODY */
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #111;
-    color: #fff;
-    text-align: center;
+  background:linear-gradient(135deg,#e6f7ff,#ffffff);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
-/* 🔷 Header */
-.header {
-    width: 100%;
-    height: 130px;
-    background: #C9D6DC;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* WHEEL */
+#spin_the_wheel {
+  position:relative;
+  margin-top:40px;
 }
-
-.logo {
-    max-height: 80px;
-}
-
-/* 🎯 Wheel */
-#wheel-container {
-    position: relative;
-    width: 320px;
-    margin: 30px auto;
-}
-
 #wheel {
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    border: 8px solid #fff;
-    position: relative;
-    overflow: hidden;
-    transition: transform 4s ease-out;
+  width:90vw;
+  max-width:500px;
 }
 
-.slice {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-    top: 50%;
-    left: 50%;
-    transform-origin: 0% 0%;
+/* BUTTON */
+#spin {
+  position:absolute;
+  top:50%; left:50%;
+  width:30%; height:30%;
+  transform:translate(-50%,-50%);
+  background:white;
+  color:skyblue;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:50%;
+  cursor:pointer;
+  font-weight:bold;
+  box-shadow:0 0 0 8px skyblue,0 0 15px rgba(0,0,0,0.3);
 }
 
-.slice span {
-    position: absolute;
-    top: 60%;
-    left: 10px;
-    font-size: 12px;
-    color: #fff;
-    font-weight: bold;
-    transform-origin: 0 0;
+/* POINTER */
+#spin::after {
+  content:"";
+  position:absolute;
+  top:-20px;
+  border:12px solid transparent;
+  border-bottom-color:skyblue;
 }
 
-/* 🔻 Pointer */
-#pointer {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 28px;
+/* POPUP */
+#popup {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
 }
-
-/* 🔘 Button */
-button {
-    padding: 12px 25px;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    background: orange;
-    color: #000;
-    cursor: pointer;
-}
-
-button:disabled {
-    background: gray;
-}
-
-/* 🌫 Blur */
-.blur {
-    filter: blur(8px);
-}
-
-/* 📦 Popup */
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(15px);
-    background: rgba(0,0,0,0.3);
-}
-
-.popup-box {
-    background: rgba(255,255,255,0.9);
-    padding: 25px;
-    border-radius: 20px;
-    text-align: center;
-    width: 80%;
-    max-width: 300px;
-    color: #000;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.popup-box button {
-    margin-top: 15px;
-    background: #007AFF;
-    color: #fff;
+#popupContent {
+  background:white;
+  padding:25px;
+  border-radius:10px;
+  text-align:center;
 }
 </style>
 </head>
-
-<body>
-
-<!-- 🔷 Header -->
-<div class="header">
-    <img src="https://via.placeholder.com/200x80?text=MonkeyGarage" class="logo">
+    <body>
+<header>
+  <img src="https://via.placeholder.com/120x40?text=LOGO">
+</header>
+        <div id="spin_the_wheel">
+  <canvas id="wheel" width="500" height="500"></canvas>
+  <div id="spin">SPIN</div>
+            
 </div>
-
-<h2>🎯 Spin & Win</h2>
-
-<div id="wheel-container">
-    <div id="pointer">▼</div>
-    <div id="wheel"></div>
-</div>
-
-<button onclick="spin()" id="spinBtn">SPIN</button>
-
-<!-- 🎉 Popup -->
-<div id="popup" class="popup">
-  <div class="popup-box">
-    <h2 id="popup-title"></h2>
-    <p id="popup-code"></p>
-    <button onclick="goToSite()">Go Now</button>
+      <div id="popup">
+  <div id="popupContent">
+    <h2 id="resultText"></h2>
+    <p id="couponText"></p>
+    <p>Redirecting in 10 seconds...</p>
   </div>
 </div>
-
+  
 <script>
-// 🎁 Rewards (EDIT HERE)
-const rewards = [
-    { label: "5% OFF", code: "MG5", weight: 40 },
-    { label: "10% OFF", code: "MG10", weight: 30 },
-    { label: "20% OFF", code: "MG20", weight: 15 },
-    { label: "50% OFF", code: "MG50", weight: 2 },
-    { label: "TRY AGAIN", code: "", weight: 50 }
+const sectors = [
+  { color:"#ffffff", text:"#00aaff", label:"Sweets", weight:30, coupon:"SWEET10" },
+  { color:"#00aaff", text:"#ffffff", label:"Prize draw", weight:20, coupon:"PRIZE50" },
+  { color:"#ffffff", text:"#00aaff", label:"Sweets", weight:15, coupon:"SWEET5" },
+  { color:"#00aaff", text:"#ffffff", label:"Prize draw", weight:10, coupon:"PRIZE20" },
+  { color:"#ffffff", text:"#00aaff", label:"Combo", weight:5, coupon:"COMBO100" },
+  { color:"#00aaff", text:"#ffffff", label:"You lose", weight:15, coupon:"TRYAGAIN" },
+  { color:"#ffffff", text:"#00aaff", label:"Prize", weight:3, coupon:"PRIZE10" },
+  { color:"#00aaff", text:"#ffffff", label:"Sweets", weight:2, coupon:"SWEET2" }
 ];
 
-const wheel = document.getElementById("wheel");
-const spinBtn = document.getElementById("spinBtn");
+const redirectURL = "https://yourwebsite.com";
 
-const total = rewards.length;
-const angle = 360 / total;
+const ctx = document.getElementById("wheel").getContext("2d");
+const spinEl = document.getElementById("spin");
 
-// 🎨 Create slices
-rewards.forEach((reward, i) => {
-    let slice = document.createElement("div");
-    slice.className = "slice";
+const tot = sectors.length;
+const PI = Math.PI;
+const TAU = 2*PI;
+const arc = TAU/tot;
+const rad = ctx.canvas.width/2;
 
-    slice.style.transform = `rotate(${i * angle}deg) skewY(${90 - angle}deg)`;
-    slice.style.background = `hsl(${i * 70}, 70%, 50%)`;
+let ang=0, angVel=0, targetIndex=null;
+const friction=0.992;
 
-    let text = document.createElement("span");
-    text.innerText = reward.label;
-    text.style.transform = `rotate(${angle/2}deg) skewY(${-(90 - angle)}deg)`;
+/* DRAW */
+sectors.forEach((s,i)=>{
+  const ang=arc*i;
+  ctx.beginPath();
+  ctx.fillStyle=s.color;
+  ctx.moveTo(rad,rad);
+  ctx.arc(rad,rad,rad,ang,ang+arc);
+  ctx.fill();
 
-    slice.appendChild(text);
-    wheel.appendChild(slice);
+  ctx.save();
+  ctx.translate(rad,rad);
+  ctx.rotate(ang+arc/2);
+  ctx.textAlign="right";
+  ctx.fillStyle=s.text;
+  ctx.font="bold 16px Lato";
+  ctx.fillText(s.label,rad-10,10);
+  ctx.restore();
 });
 
-// 🎲 Weighted random
-function getWeightedReward() {
-    let totalWeight = rewards.reduce((sum, r) => sum + r.weight, 0);
-    let random = Math.random() * totalWeight;
-
-    for (let reward of rewards) {
-        if (random < reward.weight) return reward;
-        random -= reward.weight;
-    }
+/* WEIGHT LOGIC */
+function getWeightedIndex(){
+  let total=sectors.reduce((a,b)=>a+b.weight,0);
+  let r=Math.random()*total;
+  for(let i=0;i<tot;i++){
+    if(r<sectors[i].weight) return i;
+    r-=sectors[i].weight;
+  }
+  return 0;
 }
 
-let selectedReward = null;
-let countdownInterval = null;
-
-// 🎡 Spin
-function spin() {
-
-    if (localStorage.getItem("spun")) {
-        alert("You already used your spin!");
-        return;
-    }
-
-    localStorage.setItem("spun", true);
-    spinBtn.disabled = true;
-
-    const selected = getWeightedReward();
-    selectedReward = selected;
-
-    const index = rewards.indexOf(selected);
-
-    const randomOffset = Math.random() * angle;
-    const rotation = 360 * 5 + (index * angle) + randomOffset;
-
-    wheel.style.transform = `rotate(-${rotation}deg)`;
-
-    setTimeout(() => {
-        showPopup(selected);
-    }, 4000);
+/* SPIN TO TARGET */
+function spinTo(index){
+  const targetAngle=(tot-index)*arc;
+  angVel=Math.random()*0.2+0.25;
+  ang=targetAngle;
 }
 
-// 🎉 Popup + Countdown
-function showPopup(reward) {
-    const popup = document.getElementById("popup");
+/* ANIMATION */
+function frame(){
+  if(!angVel) return;
 
-    document.body.classList.add("blur");
+  angVel*=friction;
+  if(angVel<0.002){
+    angVel=0;
 
-    document.getElementById("popup-title").innerText =
-        reward.code ? reward.label + " 🎉" : "Better luck next time 😢";
+    const res=sectors[targetIndex];
 
-    let countdown = 10;
+    document.getElementById("popup").style.display="flex";
+    document.getElementById("resultText").innerText="You won: "+res.label;
+    document.getElementById("couponText").innerText="Coupon: "+res.coupon;
 
-    document.getElementById("popup-code").innerHTML =
-        reward.code
-        ? `Use Code: <b>${reward.code}</b><br><br>Redirecting in <span id="count">${countdown}</span>s`
-        : `Redirecting in <span id="count">${countdown}</span>s`;
+    setTimeout(()=>{ window.location.href=redirectURL; },10000);
+  }
 
-    popup.style.display = "flex";
-
-    countdownInterval = setInterval(() => {
-        countdown--;
-        document.getElementById("count").innerText = countdown;
-
-        if (countdown <= 0) {
-            clearInterval(countdownInterval);
-            goToSite();
-        }
-    }, 1000);
+  ang+=angVel;
+  ctx.canvas.style.transform=`rotate(${ang-PI/2}rad)`;
 }
 
-// 🔗 Redirect
-function goToSite() {
-    clearInterval(countdownInterval);
+/* LOOP */
+(function engine(){
+  frame();
+  requestAnimationFrame(engine);
+})();
 
-    if (selectedReward && selectedReward.code) {
-        window.location.href = `https://monkeygarage.in/?coupon=${selectedReward.code}`;
-    } else {
-        window.location.href = "https://monkeygarage.in";
-    }
-}
+/* CLICK */
+spinEl.onclick=()=>{
+  if(angVel) return;
+  targetIndex=getWeightedIndex();
+  spinTo(targetIndex);
+};
 </script>
-
-</body>
+ </body>
 </html>
+:::
+       
+
+
+        
+
+
+        
+
+    
+    
