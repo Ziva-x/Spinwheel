@@ -1,201 +1,628 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Spin & Win - Monkey Garage</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<title>Spin & Win — Monkey Garage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Lato',sans-serif; }
+  :root {
+    --cyan: #74fcff;
+    --white: #ffffff;
+    --glass-bg: rgba(255,255,255,0.22);
+    --glass-border: rgba(255,255,255,0.58);
+    --glass-shadow: rgba(116,252,255,0.18);
+    --text-dark: #0a2a2b;
+    --text-mid: #1a4a4c;
+    --blur: 28px;
+  }
 
-/* HEADER */
-header {
-  width:100%;
-  background:skyblue;
-  padding:15px;
-}
-header img { height:40px; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* BODY */
-body {
-  background:linear-gradient(135deg,#e6f7ff,#ffffff);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-/* WHEEL */
-#spin_the_wheel {
-  position:relative;
-  margin-top:40px;
-}
-#wheel {
-  width:90vw;
-  max-width:500px;
+html, body {
+min-height: 100vh;
+font-family: ‘DM Sans’, sans-serif;
+background: linear-gradient(135deg, #74fcff 0%, #c8feff 38%, #ffffff 68%, #74fcff 100%);
+background-attachment: fixed;
+color: var(–text-dark);
+overflow-x: hidden;
 }
 
-/* BUTTON */
-#spin {
-  position:absolute;
-  top:50%; left:50%;
-  width:30%; height:30%;
-  transform:translate(-50%,-50%);
-  background:white;
-  color:skyblue;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  border-radius:50%;
-  cursor:pointer;
-  font-weight:bold;
-  box-shadow:0 0 0 8px skyblue,0 0 15px rgba(0,0,0,0.3);
+.blob-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.32; animation: blobFloat 12s ease-in-out infinite alternate; }
+.blob1 { width: 540px; height: 540px; background: #74fcff; top: -130px; left: -110px; animation-delay: 0s; }
+.blob2 { width: 420px; height: 420px; background: #b8feff; bottom: -90px; right: -90px; animation-delay: -4s; }
+.blob3 { width: 300px; height: 300px; background: #ffffff; top: 42%; left: 55%; animation-delay: -8s; }
+@keyframes blobFloat {
+0%   { transform: translate(0,0) scale(1); }
+100% { transform: translate(32px,42px) scale(1.09); }
 }
 
-/* POINTER */
-#spin::after {
-  content:"";
-  position:absolute;
-  top:-20px;
-  border:12px solid transparent;
-  border-bottom-color:skyblue;
+body::after {
+content: ‘’; position: fixed; inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+pointer-events: none; z-index: 1; opacity: 0.45;
 }
 
-/* POPUP */
-#popup {
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
+.page {
+position: relative; z-index: 2;
+min-height: 100vh;
+display: flex; flex-direction: column; align-items: center;
+padding: 32px 20px 64px;
 }
-#popupContent {
-  background:white;
-  padding:25px;
-  border-radius:10px;
-  text-align:center;
+
+header { text-align: center; margin-bottom: 32px; animation: fadeUp 0.8s cubic-bezier(.16,1,.3,1) both; }
+.badge {
+display: inline-block;
+background: rgba(255,255,255,0.28);
+border: 1px solid rgba(255,255,255,0.65);
+backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+border-radius: 999px; padding: 6px 18px;
+font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+text-transform: uppercase; color: var(–text-mid);
+margin-bottom: 14px;
+box-shadow: 0 2px 16px var(–glass-shadow), inset 0 1px 0 rgba(255,255,255,0.85);
+}
+h1 {
+font-family: ‘Clash Display’, sans-serif;
+font-size: clamp(2.2rem, 7vw, 4rem);
+font-weight: 700; line-height: 1.05;
+color: var(–text-dark); letter-spacing: -0.03em;
+text-shadow: 0 2px 32px rgba(116,252,255,0.28);
+}
+h1 span {
+background: linear-gradient(90deg, #00c8cc, #007b7e);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.subtitle { margin-top: 10px; font-size: 0.97rem; color: var(–text-mid); font-weight: 300; opacity: 0.82; }
+
+.glass-card {
+background: rgba(255,255,255,0.26);
+border: 1.5px solid rgba(255,255,255,0.65);
+backdrop-filter: blur(36px) saturate(1.7); -webkit-backdrop-filter: blur(36px) saturate(1.7);
+border-radius: 32px;
+box-shadow: 0 8px 48px rgba(116,252,255,0.16), 0 2px 0 rgba(255,255,255,0.9) inset, 0 -1px 0 rgba(255,255,255,0.4) inset;
+padding: clamp(20px, 5vw, 40px);
+width: 100%; max-width: 500px;
+animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.1s both;
+position: relative; overflow: hidden;
+}
+.glass-card::before {
+content: ‘’; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+border-radius: 32px 32px 0 0;
+}
+
+.wheel-wrap {
+position: relative; display: flex;
+align-items: center; justify-content: center;
+margin-bottom: 24px;
+}
+.wheel-glow {
+position: absolute;
+width: calc(100% + 48px); height: calc(100% + 48px);
+border-radius: 50%;
+background: radial-gradient(circle, rgba(116,252,255,0.38) 0%, transparent 70%);
+animation: pulseGlow 3s ease-in-out infinite; z-index: 0;
+}
+@keyframes pulseGlow {
+0%,100% { opacity: 0.55; transform: scale(1); }
+50%      { opacity: 1;    transform: scale(1.05); }
+}
+
+canvas#wheel {
+position: relative; z-index: 1;
+border-radius: 50%;
+box-shadow: 0 0 0 6px rgba(255,255,255,0.65), 0 0 0 11px rgba(116,252,255,0.22), 0 16px 52px rgba(0,140,150,0.22);
+display: block; max-width: 100%;
+}
+
+.pointer {
+position: absolute; top: 50%; right: -20px;
+transform: translateY(-50%); z-index: 10;
+filter: drop-shadow(0 2px 8px rgba(0,150,160,0.45));
+}
+
+.spin-btn {
+width: 100%; padding: 16px 0;
+border-radius: 18px; border: none; cursor: pointer;
+font-family: ‘Clash Display’, sans-serif;
+font-size: 1.12rem; font-weight: 600; letter-spacing: 0.04em;
+color: #fff;
+background: linear-gradient(135deg, #00c8cc 0%, #007b7e 100%);
+box-shadow: 0 4px 24px rgba(0,150,160,0.35), 0 1px 0 rgba(255,255,255,0.35) inset;
+transition: transform 0.15s ease, box-shadow 0.15s ease;
+position: relative; overflow: hidden;
+}
+.spin-btn::after {
+content: ‘’; position: absolute; top: 0; left: -100%;
+width: 60%; height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+transform: skewX(-20deg); transition: left 0.5s ease;
+}
+.spin-btn:hover::after { left: 160%; }
+.spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,150,160,0.45), 0 1px 0 rgba(255,255,255,0.35) inset; }
+.spin-btn:active:not(:disabled) { transform: translateY(0); }
+.spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.odds-wrap { margin-top: 24px; width: 100%; max-width: 500px; animation: fadeUp 1s cubic-bezier(.16,1,.3,1) 0.2s both; }
+.odds-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(–text-mid); opacity: 0.65; margin-bottom: 10px; text-align: center; font-weight: 500; }
+.odds-grid { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+.odds-pill {
+background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.62);
+backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+border-radius: 999px; padding: 5px 13px;
+font-size: 0.76rem; color: var(–text-mid); font-weight: 400;
+box-shadow: 0 2px 8px rgba(116,252,255,0.1), 0 1px 0 rgba(255,255,255,0.75) inset;
+display: flex; align-items: center; gap: 5px;
+}
+.odds-pill .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ══════════════════════ MODAL ══════════════════════ */
+.modal-overlay {
+display: none;
+position: fixed; inset: 0; z-index: 200;
+background: rgba(0, 80, 85, 0.3);
+backdrop-filter: blur(20px) saturate(1.5); -webkit-backdrop-filter: blur(20px) saturate(1.5);
+align-items: center; justify-content: center;
+padding: 20px;
+}
+.modal-overlay.active { display: flex; animation: overlayIn 0.3s ease both; }
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+background: rgba(255,255,255,0.38);
+border: 1.5px solid rgba(255,255,255,0.78);
+backdrop-filter: blur(52px) saturate(2.1); -webkit-backdrop-filter: blur(52px) saturate(2.1);
+border-radius: 28px;
+box-shadow: 0 24px 80px rgba(0,140,155,0.24), 0 2px 0 rgba(255,255,255,0.96) inset;
+width: 100%; max-width: 400px;
+padding: 36px 28px 28px;
+text-align: center;
+position: relative;
+animation: modalPop 0.5s cubic-bezier(.16,1,.3,1) both;
+overflow: hidden;
+}
+.modal::before {
+content: ‘’; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.98), transparent);
+}
+@keyframes modalPop {
+from { opacity: 0; transform: scale(0.8) translateY(36px); }
+to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-emoji {
+font-size: 3.8rem; line-height: 1; margin-bottom: 10px;
+filter: drop-shadow(0 4px 16px rgba(0,200,210,0.4));
+animation: trophyBounce 0.65s cubic-bezier(.16,1,.3,1) 0.25s both;
+}
+@keyframes trophyBounce {
+from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+to   { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+.modal-eyebrow {
+font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+font-weight: 500; color: var(–text-mid); opacity: 0.7; margin-bottom: 4px;
+}
+.modal-discount {
+font-family: ‘Clash Display’, sans-serif;
+font-size: clamp(3rem, 13vw, 4.8rem);
+font-weight: 700; line-height: 1;
+background: linear-gradient(135deg, #00b8bc 0%, #004e52 100%);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+letter-spacing: -0.04em;
+animation: fadeUp 0.5s cubic-bezier(.16,1,.3,1) 0.3s both;
+}
+.modal-sub {
+font-size: 0.88rem; color: var(–text-mid); font-weight: 300;
+margin: 6px 0 18px; opacity: 0.78;
+}
+
+/* Coupon */
+.coupon-wrap {
+background: rgba(116,252,255,0.14);
+border: 1.5px dashed rgba(0,175,185,0.42);
+border-radius: 14px; padding: 13px 18px;
+margin-bottom: 18px;
+position: relative; cursor: pointer;
+transition: background 0.2s, transform 0.15s;
+user-select: none;
+}
+.coupon-wrap:hover { background: rgba(116,252,255,0.26); transform: scale(1.01); }
+.coupon-wrap:active { transform: scale(0.99); }
+.coupon-label-sm {
+font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+color: var(–text-mid); opacity: 0.58; margin-bottom: 5px;
+}
+.coupon-code-text {
+font-family: ‘DM Sans’, monospace;
+font-size: 1.5rem; font-weight: 600;
+letter-spacing: 0.18em; color: #004e52;
+text-shadow: 0 1px 8px rgba(0,180,190,0.16);
+}
+.copy-hint {
+position: absolute; top: 8px; right: 10px;
+font-size: 0.62rem; color: var(–text-mid); opacity: 0.45;
+letter-spacing: 0.08em; text-transform: uppercase;
+}
+.copied-toast {
+position: absolute; inset: 0; border-radius: 13px;
+background: rgba(116,252,255,0.5);
+display: flex; align-items: center; justify-content: center;
+font-weight: 600; font-size: 0.9rem; color: #003d40;
+opacity: 0; pointer-events: none;
+transition: opacity 0.2s;
+}
+.copied-toast.show { opacity: 1; }
+
+/* Countdown */
+.countdown-wrap { margin-bottom: 16px; }
+.countdown-text { font-size: 0.8rem; color: var(–text-mid); opacity: 0.62; margin-bottom: 8px; }
+.countdown-text strong { color: #004e52; font-weight: 700; font-size: 0.95rem; }
+.progress-bg { width: 100%; height: 5px; background: rgba(116,252,255,0.2); border-radius: 999px; overflow: hidden; }
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, #00c8cc, #74fcff);
+border-radius: 999px; width: 100%;
+box-shadow: 0 0 10px rgba(116,252,255,0.7);
+transition: width 1s linear;
+}
+
+/* Go button */
+.go-btn {
+width: 100%; padding: 14px 0;
+border-radius: 16px; border: none; cursor: pointer;
+font-family: ‘Clash Display’, sans-serif;
+font-size: 1.05rem; font-weight: 600; letter-spacing: 0.04em;
+color: #fff;
+background: linear-gradient(135deg, #00c8cc 0%, #007b7e 100%);
+box-shadow: 0 4px 20px rgba(0,150,160,0.32), 0 1px 0 rgba(255,255,255,0.3) inset;
+transition: transform 0.15s, box-shadow 0.15s;
+position: relative; overflow: hidden;
+}
+.go-btn::after {
+content: ‘’; position: absolute; top: 0; left: -100%;
+width: 60%; height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transform: skewX(-20deg); transition: left 0.5s;
+}
+.go-btn:hover::after { left: 160%; }
+.go-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,150,160,0.42), 0 1px 0 rgba(255,255,255,0.3) inset; }
+
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 300; }
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(22px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 420px) {
+.glass-card { border-radius: 22px; padding: 18px 14px; }
+.modal { border-radius: 22px; padding: 26px 18px 22px; }
+.pointer { right: -14px; }
+}
+@media (min-width: 768px) {
+.page { padding: 52px 24px 80px; }
 }
 </style>
+
 </head>
-    <body>
-<header>
-  <img src="https://via.placeholder.com/120x40?text=LOGO">
-</header>
-        <div id="spin_the_wheel">
-  <canvas id="wheel" width="500" height="500"></canvas>
-  <div id="spin">SPIN</div>
-            
+<body>
+
+<div class="blob-container">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
 </div>
-      <div id="popup">
-  <div id="popupContent">
-    <h2 id="resultText"></h2>
-    <p id="couponText"></p>
-    <p>Redirecting in 10 seconds...</p>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- POPUP MODAL -->
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-emoji" id="modalEmoji">🎉</div>
+    <div class="modal-eyebrow">You won</div>
+    <div class="modal-discount" id="modalDiscount">—</div>
+    <div class="modal-sub">discount on your next order</div>
+
+```
+<div class="coupon-wrap" id="couponWrap" onclick="copyCoupon()">
+  <span class="copy-hint">tap to copy</span>
+  <div class="coupon-label-sm">Your Coupon Code</div>
+  <div class="coupon-code-text" id="modalCode">—</div>
+  <div class="copied-toast" id="copiedToast">✓ Copied!</div>
+</div>
+
+<div class="countdown-wrap">
+  <div class="countdown-text">Redirecting to Monkey Garage in <strong id="countNum">10</strong>s</div>
+  <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<button class="go-btn" onclick="goNow()">🛒 &nbsp;Shop Now at Monkey Garage</button>
+```
+
   </div>
 </div>
-  
+
+<main class="page">
+  <header>
+    <div class="badge">✦ Limited Time Offer</div>
+    <h1>Spin &amp; <span>Win</span></h1>
+    <p class="subtitle">Give the wheel a spin — your exclusive discount awaits</p>
+  </header>
+
+  <div class="glass-card">
+    <div class="wheel-wrap" id="wheelWrap">
+      <div class="wheel-glow"></div>
+      <canvas id="wheel" width="340" height="340"></canvas>
+      <div class="pointer">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#74fcff"/>
+              <stop offset="100%" stop-color="#00a8ac"/>
+            </linearGradient>
+          </defs>
+          <polygon points="36,18 8,8 14,18 8,28" fill="url(#pg)" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+```
+<button class="spin-btn" id="spinBtn" onclick="spinWheel()">
+  🎰 &nbsp;Spin the Wheel
+</button>
+```
+
+  </div>
+
+  <div class="odds-wrap">
+    <div class="odds-title">Wheel segments</div>
+    <div class="odds-grid" id="oddsGrid"></div>
+  </div>
+</main>
+
 <script>
-const sectors = [
-  { color:"#ffffff", text:"#00aaff", label:"Sweets", weight:30, coupon:"SWEET10" },
-  { color:"#00aaff", text:"#ffffff", label:"Prize draw", weight:20, coupon:"PRIZE50" },
-  { color:"#ffffff", text:"#00aaff", label:"Sweets", weight:15, coupon:"SWEET5" },
-  { color:"#00aaff", text:"#ffffff", label:"Prize draw", weight:10, coupon:"PRIZE20" },
-  { color:"#ffffff", text:"#00aaff", label:"Combo", weight:5, coupon:"COMBO100" },
-  { color:"#00aaff", text:"#ffffff", label:"You lose", weight:15, coupon:"TRYAGAIN" },
-  { color:"#ffffff", text:"#00aaff", label:"Prize", weight:3, coupon:"PRIZE10" },
-  { color:"#00aaff", text:"#ffffff", label:"Sweets", weight:2, coupon:"SWEET2" }
+// ─── Segments ─────────────────────────────────────────────────────────────────
+// Weights:  5%=80, 10%=8, 15%=5, 20%=3, 30%=2, 40%=1, 50%=0  → total=99
+const SEGMENTS = [
+  { label:'5%',  code:'MONKEY5',  emoji:'😊', color:'#d6fdff', textColor:'#006266', weight:80 },
+  { label:'10%', code:'MONKEY10', emoji:'🎁', color:'#a2f6fa', textColor:'#004547', weight:8  },
+  { label:'15%', code:'MONKEY15', emoji:'🌟', color:'#74fcff', textColor:'#003234', weight:5  },
+  { label:'20%', code:'MONKEY20', emoji:'🔥', color:'#3ae6ea', textColor:'#002020', weight:3  },
+  { label:'30%', code:'MONKEY30', emoji:'💥', color:'#00cdd1', textColor:'#ffffff', weight:2  },
+  { label:'40%', code:'MONKEY40', emoji:'🚀', color:'#009fa3', textColor:'#ffffff', weight:1  },
+  { label:'50%', code:'MONKEY50', emoji:'👑', color:'#006e71', textColor:'#ffffff', weight:0  },
 ];
 
-const redirectURL = "https://yourwebsite.com";
+const TOTAL_WEIGHT = SEGMENTS.reduce((s,seg)=>s+seg.weight,0); // 99
 
-const ctx = document.getElementById("wheel").getContext("2d");
-const spinEl = document.getElementById("spin");
+// ─── Canvas ───────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('wheel');
+const ctx    = canvas.getContext('2d');
+const N      = SEGMENTS.length;
+const ARC    = (2*Math.PI)/N;
+let currentAngle = 0;
+let spinning     = false;
 
-const tot = sectors.length;
-const PI = Math.PI;
-const TAU = 2*PI;
-const arc = TAU/tot;
-const rad = ctx.canvas.width/2;
+function drawWheel(rotation=0){
+  const R=canvas.width/2;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-let ang=0, angVel=0, targetIndex=null;
-const friction=0.992;
+  for(let i=0;i<N;i++){
+    const seg=SEGMENTS[i];
+    const start=rotation+i*ARC, end=start+ARC;
 
-/* DRAW */
-sectors.forEach((s,i)=>{
-  const ang=arc*i;
+    ctx.beginPath();
+    ctx.moveTo(R,R);
+    ctx.arc(R,R,R-4,start,end);
+    ctx.closePath();
+    ctx.fillStyle=seg.color;
+    ctx.fill();
+
+    ctx.strokeStyle='rgba(255,255,255,0.75)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    if(i%2===0){
+      const g=ctx.createRadialGradient(R,R,0,R,R,R);
+      g.addColorStop(0,'rgba(255,255,255,0.17)');
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.beginPath();
+      ctx.moveTo(R,R);
+      ctx.arc(R,R,R-4,start,end);
+      ctx.closePath();
+      ctx.fillStyle=g;
+      ctx.fill();
+    }
+
+    ctx.save();
+    ctx.translate(R,R);
+    ctx.rotate(start+ARC/2);
+    ctx.textAlign='right';
+    ctx.fillStyle=seg.textColor;
+    ctx.font=`bold ${canvas.width*0.06}px 'Clash Display',sans-serif`;
+    ctx.shadowColor='rgba(0,0,0,0.1)';
+    ctx.shadowBlur=4;
+    ctx.fillText(seg.label,R-14,5);
+    ctx.restore();
+  }
+
+  // Hub
+  const hr=R*0.15;
+  const hg=ctx.createRadialGradient(R-hr*0.3,R-hr*0.35,hr*0.04,R,R,hr);
+  hg.addColorStop(0,'rgba(255,255,255,0.97)');
+  hg.addColorStop(0.45,'rgba(210,255,255,0.8)');
+  hg.addColorStop(1,'rgba(116,252,255,0.55)');
   ctx.beginPath();
-  ctx.fillStyle=s.color;
-  ctx.moveTo(rad,rad);
-  ctx.arc(rad,rad,rad,ang,ang+arc);
-  ctx.fill();
+  ctx.arc(R,R,hr,0,2*Math.PI);
+  ctx.fillStyle=hg; ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.92)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(R-hr*0.28,R-hr*0.34,hr*0.28,0,2*Math.PI);
+  ctx.fillStyle='rgba(255,255,255,0.58)'; ctx.fill();
+}
 
-  ctx.save();
-  ctx.translate(rad,rad);
-  ctx.rotate(ang+arc/2);
-  ctx.textAlign="right";
-  ctx.fillStyle=s.text;
-  ctx.font="bold 16px Lato";
-  ctx.fillText(s.label,rad-10,10);
-  ctx.restore();
+drawWheel(0);
+
+// ─── Pick segment by weight ───────────────────────────────────────────────────
+function pickSegment(){
+  let r=Math.random()*TOTAL_WEIGHT;
+  for(let i=0;i<SEGMENTS.length;i++){
+    r-=SEGMENTS[i].weight;
+    if(r<=0) return i;
+  }
+  return SEGMENTS.findIndex(s=>s.weight>0);
+}
+
+// ─── Spin ─────────────────────────────────────────────────────────────────────
+function spinWheel(){
+  if(spinning) return;
+  spinning=true;
+  document.getElementById('spinBtn').disabled=true;
+
+  const chosen=pickSegment();
+  const spins=6+Math.floor(Math.random()*4);
+  const targetMid=-(chosen*ARC+ARC/2);
+  const diff=((targetMid-currentAngle)%(2*Math.PI));
+  const totalRot=spins*2*Math.PI+diff;
+  const duration=5000;
+  const startAngle=currentAngle;
+  let   startTime=null;
+
+  function ease(t){ return 1-Math.pow(1-t,4); }
+  function animate(ts){
+    if(!startTime) startTime=ts;
+    const p=Math.min((ts-startTime)/duration,1);
+    currentAngle=startAngle+totalRot*ease(p);
+    drawWheel(currentAngle);
+    if(p<1){ requestAnimationFrame(animate); }
+    else{
+      currentAngle=(startAngle+totalRot)%(2*Math.PI);
+      spinning=false;
+      document.getElementById('spinBtn').disabled=false;
+      showPopup(chosen);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+// ─── Popup ────────────────────────────────────────────────────────────────────
+let cdTimer=null;
+
+function showPopup(index){
+  const seg=SEGMENTS[index];
+  document.getElementById('modalEmoji').textContent   =seg.emoji;
+  document.getElementById('modalDiscount').textContent=seg.label+' OFF';
+  document.getElementById('modalCode').textContent    =seg.code;
+  document.getElementById('copiedToast').classList.remove('show');
+  document.getElementById('modalOverlay').classList.add('active');
+
+  launchConfetti(seg.color, index>=3);
+
+  // Countdown
+  let secs=10;
+  const numEl=document.getElementById('countNum');
+  const bar  =document.getElementById('progressFill');
+  numEl.textContent=secs;
+  bar.style.transition='none';
+  bar.style.width='100%';
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      bar.style.transition=`width ${secs}s linear`;
+      bar.style.width='0%';
+    });
+  });
+
+  if(cdTimer) clearInterval(cdTimer);
+  cdTimer=setInterval(()=>{
+    secs--;
+    numEl.textContent=secs;
+    if(secs<=0){ clearInterval(cdTimer); goNow(); }
+  },1000);
+}
+
+function goNow(){
+  if(cdTimer) clearInterval(cdTimer);
+  window.location.href='https://monkeygarage.in';
+}
+
+function copyCoupon(){
+  const code=document.getElementById('modalCode').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(code).catch(()=>{});
+  const toast=document.getElementById('copiedToast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),1800);
+}
+
+// ─── Confetti ─────────────────────────────────────────────────────────────────
+function launchConfetti(accent,big=false){
+  const cc=document.getElementById('confetti-canvas');
+  cc.width=window.innerWidth; cc.height=window.innerHeight;
+  const cctx=cc.getContext('2d');
+  const pieces=[];
+  const count=big?180:90;
+  const cols=['#74fcff','#ffffff',accent,'#00c8cc','#b8f8fb','#e0feff'];
+
+  for(let i=0;i<count;i++){
+    pieces.push({
+      x:Math.random()*cc.width, y:-10-Math.random()*220,
+      w:6+Math.random()*10, h:4+Math.random()*6,
+      color:cols[Math.floor(Math.random()*cols.length)],
+      vx:(Math.random()-0.5)*4.5, vy:2.5+Math.random()*4,
+      angle:Math.random()*Math.PI, spin:(Math.random()-0.5)*0.22,
+      opacity:1
+    });
+  }
+
+  let fr;
+  function draw(){
+    cctx.clearRect(0,0,cc.width,cc.height);
+    for(let i=pieces.length-1;i>=0;i--){
+      const p=pieces[i];
+      p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin; p.vy+=0.07; p.opacity-=0.005;
+      if(p.opacity<=0){pieces.splice(i,1);continue;}
+      cctx.save();
+      cctx.translate(p.x,p.y); cctx.rotate(p.angle);
+      cctx.globalAlpha=Math.max(p.opacity,0);
+      cctx.fillStyle=p.color;
+      cctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      cctx.restore();
+    }
+    if(pieces.length>0) fr=requestAnimationFrame(draw);
+    else{ cctx.clearRect(0,0,cc.width,cc.height); cancelAnimationFrame(fr); }
+  }
+  requestAnimationFrame(draw);
+}
+
+// ─── Odds pills ───────────────────────────────────────────────────────────────
+const grid=document.getElementById('oddsGrid');
+SEGMENTS.forEach(seg=>{
+  const pct=seg.weight===0?'0':((seg.weight/TOTAL_WEIGHT)*100).toFixed(1);
+  const p=document.createElement('div');
+  p.className='odds-pill';
+  p.innerHTML=`<span class="dot" style="background:${seg.color};border:1px solid rgba(0,0,0,0.08)"></span><strong>${seg.label}</strong>&nbsp;<span style="opacity:0.55">${pct}%</span>`;
+  grid.appendChild(p);
 });
 
-/* WEIGHT LOGIC */
-function getWeightedIndex(){
-  let total=sectors.reduce((a,b)=>a+b.weight,0);
-  let r=Math.random()*total;
-  for(let i=0;i<tot;i++){
-    if(r<sectors[i].weight) return i;
-    r-=sectors[i].weight;
-  }
-  return 0;
+// ─── Responsive canvas ────────────────────────────────────────────────────────
+function resizeCanvas(){
+  const wrap=document.getElementById('wheelWrap');
+  const size=Math.min(wrap.clientWidth-36,340);
+  canvas.style.width=size+'px';
+  canvas.style.height=size+'px';
 }
-
-/* SPIN TO TARGET */
-function spinTo(index){
-  const targetAngle=(tot-index)*arc;
-  angVel=Math.random()*0.2+0.25;
-  ang=targetAngle;
-}
-
-/* ANIMATION */
-function frame(){
-  if(!angVel) return;
-
-  angVel*=friction;
-  if(angVel<0.002){
-    angVel=0;
-
-    const res=sectors[targetIndex];
-
-    document.getElementById("popup").style.display="flex";
-    document.getElementById("resultText").innerText="You won: "+res.label;
-    document.getElementById("couponText").innerText="Coupon: "+res.coupon;
-
-    setTimeout(()=>{ window.location.href=redirectURL; },10000);
-  }
-
-  ang+=angVel;
-  ctx.canvas.style.transform=`rotate(${ang-PI/2}rad)`;
-}
-
-/* LOOP */
-(function engine(){
-  frame();
-  requestAnimationFrame(engine);
-})();
-
-/* CLICK */
-spinEl.onclick=()=>{
-  if(angVel) return;
-  targetIndex=getWeightedIndex();
-  spinTo(targetIndex);
-};
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
 </script>
- </body>
+
+</body>
 </html>
-:::
        
 
 
